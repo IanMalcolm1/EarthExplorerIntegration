@@ -130,6 +130,9 @@ namespace GloVisIntegration
             var downloadOp = sender as CoreWebView2DownloadOperation;
             if (downloadOp.State == CoreWebView2DownloadState.Completed && downloadOp.ResultFilePath.EndsWith("laz"))
             {
+                //remove handler lest it be fired multiple times
+                downloadOp.StateChanged -= DownloadChangedHandler;
+
                 //get path to laszip executable
                 string laszipPath = Path.Combine( AddinAssemblyLocation(), "Libs", "laszip.exe");
 
