@@ -11,8 +11,6 @@ using System.IO;
 using System.Formats.Tar;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using System.Text.RegularExpressions;
-using System.Linq;
-using static ArcGIS.Desktop.Internal.Core.CancellableFileChecker;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 
 namespace GloVisIntegration
@@ -27,6 +25,7 @@ namespace GloVisIntegration
         private CoreWebView2 _webViewCore;
         private HttpClient _httpClient;
 
+        private List<string> _validURLDomains = new List<string> { "https://landsatlook.usgs.gov/gen-bundle", "https://landsatlook.usgs.gov/data/collection", "https://dds.cr.usgs.gov/download" };
         private Regex _productNamePattern = new Regex(@"L[A-Z]\d\d_L\d[A-Z]{2}_\d+_\d{8}_\d{8}_\d\d_[A-Z\d]{2}");
 
 
@@ -107,31 +106,27 @@ namespace GloVisIntegration
             Directory.CreateDirectory(_downloadFolderPath);
         }
 
+
+        /// <summary>
+        /// Handles attempt to open new window. No windows will be allowed to open, but valid download URLs will be
+        /// intercepted and processed manually.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void OpenNewWindowHandler(object sender, CoreWebView2NewWindowRequestedEventArgs args)
         {
             args.Handled = true;
             var downloadUri = args.Uri;
 
-            if (NotDownloadingLandsat && args.Uri.StartsWith("https://landsatlook.usgs.gov/gen-bundle"))
+            foreach (string domain in _validURLDomains)
             {
-                NotDownloadingLandsat = false;
-                string bandsFolder = await DownloadLandsat(downloadUri);
-                NotDownloadingLandsat = true;
-                PopulateAndOpenCompositeBandTool(bandsFolder);
-            }
-            else if (NotDownloadingLandsat && args.Uri.StartsWith("https://landsatlook.usgs.gov/data/collection"))
-            {
-                NotDownloadingLandsat = false;
-                string bandsFolder = await DownloadLandsat(downloadUri);
-                NotDownloadingLandsat = true;
-                PopulateAndOpenCompositeBandTool(bandsFolder);
-            }
-            else if (NotDownloadingLandsat && args.Uri.StartsWith("https://dds.cr.usgs.gov/download"))
-            {
-                NotDownloadingLandsat = false;
-                string bandsFolder = await DownloadLandsat(downloadUri);
-                NotDownloadingLandsat = true;
-                PopulateAndOpenCompositeBandTool(bandsFolder);
+                if (downloadUri.StartsWith(domain))
+                {
+                    NotDownloadingLandsat = false;
+                    string bandsFolder = await DownloadLandsat(downloadUri);
+                    NotDownloadingLandsat = true;
+                    PopulateAndOpenCompositeBandTool(bandsFolder);
+                }
             }
         }
 
@@ -144,7 +139,6 @@ namespace GloVisIntegration
         public async Task<string> DownloadLandsat(string downloadUri)
         {
             EnsureDownloadFolderExists();
-
 
 
             //get initial response information
@@ -167,15 +161,17 @@ namespace GloVisIntegration
             }
 
 
-            //Display progress dialog
+            //set up process dialog
             uint progressMax = 100;
-            var progDialog = new ArcGIS.Desktop.Framework.Threading.Tasks.ProgressDialog($"Downloading {fileName}...", progressMax, false);
-            var progSource = new ArcGIS.Desktop.Framework.Threading.Tasks.CancelableProgressorSource(progDialog);
+            var progDialog = new ProgressDialog($"Downloading {fileName}...", progressMax, false);
+            var progSource = new ProgressorSource(progDialog);
 
             progSource.Max = progressMax;
 
             var productFolderPath = Path.Combine(_downloadFolderPath, productName);
 
+
+            //do download (showing dialog)
             await QueuedTask.Run(async () =>
             {
                 //create download directory
@@ -212,9 +208,11 @@ namespace GloVisIntegration
                 //extract if necessary
                 if (fileName.Substring(fileName.Length - 3) == "tar")
                 {
+                    progSource.Progressor.Status = "Extracting tarball...";
                     await TarFile.ExtractToDirectoryAsync(downloadFilePath, productFolderPath, true);
                     File.Delete(downloadFilePath);
                 }
+
             }, progSource.Progressor);
 
 
