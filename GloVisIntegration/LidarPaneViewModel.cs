@@ -15,6 +15,7 @@ using ArcGIS.Desktop.Mapping;
 using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Formats.Tar;
 using System.IO;
 using System.Linq;
@@ -116,7 +117,7 @@ namespace GloVisIntegration
         }
 
 
-        private async void DownloadStartingHandler(object sender, CoreWebView2DownloadStartingEventArgs args)
+        private void DownloadStartingHandler(object sender, CoreWebView2DownloadStartingEventArgs args)
         {
             EnsureDownloadFolderExists();
 
@@ -127,10 +128,35 @@ namespace GloVisIntegration
         private async void DownloadChangedHandler(object sender, Object e)
         {
             var downloadOp = sender as CoreWebView2DownloadOperation;
-            if (downloadOp.State == CoreWebView2DownloadState.Completed)
+            if (downloadOp.State == CoreWebView2DownloadState.Completed && downloadOp.ResultFilePath.EndsWith("laz"))
             {
-                //extract with laszip
+                //get path to laszip executable
+                string laszipPath = Path.Combine( AddinAssemblyLocation(), "Libs", "laszip.exe");
+
+                //basically copy-pasted from stack overflow (save for the actual command)
+                Process process = new Process();
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = $"/C {laszipPath} -i {downloadOp.ResultFilePath} -o {Path.ChangeExtension(downloadOp.ResultFilePath, "las")}";
+                process.StartInfo = startInfo;
+                if (process.Start())
+                {
+                    await process.WaitForExitAsync();
+                }
+
+                //delete laz file after extraction
+                File.Delete(downloadOp.ResultFilePath);
             }
+        }
+
+        //Copied from the documentation, lol
+        public static string AddinAssemblyLocation()
+        {
+            var asm = System.Reflection.Assembly.GetExecutingAssembly();
+            return Path.GetDirectoryName(
+                              Uri.UnescapeDataString(
+                                      new Uri(asm.CodeBase).LocalPath));
         }
 
         #region Pane Overrides

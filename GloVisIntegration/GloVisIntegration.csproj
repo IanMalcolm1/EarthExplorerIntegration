@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Config.daml" />
+    <None Remove="Libs\laszip.exe" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config.daml" />    
@@ -106,6 +107,11 @@
 		  <CopyLocal>False</CopyLocal>
 		  <Private>False</Private>
 	  </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\laszip.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
    <Import Project="C:\Users\ian13774\AppData\Local\Programs\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets" Condition="Exists('C:\Users\ian13774\AppData\Local\Programs\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets') AND !Exists('Esri.ArcGISPro.Extensions.targets')" />
 </Project>
