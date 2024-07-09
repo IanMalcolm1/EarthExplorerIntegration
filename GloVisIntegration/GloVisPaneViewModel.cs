@@ -163,8 +163,8 @@ namespace GloVisIntegration
 
             //set up process dialog
             uint progressMax = 100;
-            var progDialog = new ProgressDialog($"Downloading {fileName}...", progressMax, false);
-            var progSource = new ProgressorSource(progDialog);
+            var progDialog = new ProgressDialog($"Downloading {fileName}...", "Cancel", progressMax, false);
+            var progSource = new CancelableProgressorSource(progDialog);
 
             progSource.Max = progressMax;
 
@@ -188,7 +188,8 @@ namespace GloVisIntegration
                     {
                         int bytesRead = -1;
                         long bytesReadTotal = 0;
-                        while (bytesReadTotal >= contentLength || bytesRead != 0)
+                        while (!progSource.Progressor.CancellationToken.IsCancellationRequested
+                            && (bytesReadTotal <= contentLength || bytesRead != 0))
                         {
                             byte[] buffer = new byte[_defaultBufferSize];
                             bytesRead = await downloadStream.ReadAsync(buffer, 0, _defaultBufferSize);
@@ -202,6 +203,15 @@ namespace GloVisIntegration
                             await fileStream.WriteAsync(buffer, 0, bytesRead);
                         }
                     }
+                }
+
+
+                //if cancellation was requested, clean up and return
+                if (progSource.Progressor.CancellationToken.IsCancellationRequested)
+                {
+                    progSource.Progressor.Status = "Canceled. Deleting download file...";
+                    File.Delete(downloadFilePath);
+                    return;
                 }
 
 
