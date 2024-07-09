@@ -15,9 +15,9 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 
 namespace GloVisIntegration
 {
-    internal class GloVisPaneViewModel : ViewStatePane
+    internal class EarthExplorerPaneViewModel : ViewStatePane
     {
-        private const string _viewPaneID = "GloVisIntegration_GloVisPane";
+        private const string _viewPaneID = "EarthExplorerPane";
         private const string _downloadFolderName = "EarthExplorerAddinDownloads";
         private string _downloadFolderPath;
         private const int _defaultBufferSize = 81920;
@@ -32,7 +32,7 @@ namespace GloVisIntegration
         /// <summary>
         /// Consume the passed in CIMView. Call the base constructor to wire up the CIMView.
         /// </summary>
-        public GloVisPaneViewModel(CIMView view) : base(view)
+        public EarthExplorerPaneViewModel(CIMView view) : base(view)
         {
             _httpClient = new HttpClient();
         }
@@ -40,11 +40,11 @@ namespace GloVisIntegration
         /// <summary>
         /// Create a new instance of the pane.
         /// </summary>
-        internal static GloVisPaneViewModel Create()
+        internal static EarthExplorerPaneViewModel Create()
         {
             var view = new CIMGenericView();
             view.ViewType = _viewPaneID;
-            return FrameworkApplication.Panes.Create(_viewPaneID, new object[] { view }) as GloVisPaneViewModel;
+            return FrameworkApplication.Panes.Create(_viewPaneID, new object[] { view }) as EarthExplorerPaneViewModel;
         }
 
 
@@ -308,11 +308,11 @@ namespace GloVisIntegration
     /// <summary>
     /// Button implementation to create a new instance of the pane and activate it.
     /// </summary>
-    internal class GloVisPane_OpenButton : Button
+    internal class EarthExplorerPane_OpenButton : Button
     {
         protected override void OnClick()
         {
-            GloVisPaneViewModel.Create();
+            EarthExplorerPaneViewModel.Create();
         }
     }
 }

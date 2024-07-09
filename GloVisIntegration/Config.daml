@@ -1,42 +1,58 @@
 ﻿<ArcGIS defaultAssembly="GloVisIntegration.dll" defaultNamespace="GloVisIntegration" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Users/ian13774/AppData/Local/Programs/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-  <AddInInfo id="{9d49c929-cf58-4a83-b30f-cd65b7b051e7}" version="1.0" desktopVersion="3.3.52636" product="ArcGISPro">
-    <Name>GloVisIntegration</Name>
-    <Description>GloVisIntegration description</Description>
-    <Image>Images\AddinDesktop32.png</Image>
-    <Author>ian13774</Author>
-    <Company>ESRI</Company>
-    <Date>7/4/2024 1:52:35 PM</Date>
-    <Subject>Framework</Subject>
-    <!-- Note subject can be one or more of these topics:
+	<AddInInfo id="{9d49c929-cf58-4a83-b30f-cd65b7b051e7}" version="1.0" desktopVersion="3.3.52636" product="ArcGISPro">
+		<Name>GloVisIntegration</Name>
+		<Description>GloVisIntegration description</Description>
+		<Image>Images\AddinDesktop32.png</Image>
+		<Author>ian13774</Author>
+		<Company>ESRI</Company>
+		<Date>7/4/2024 1:52:35 PM</Date>
+		<Subject>Framework</Subject>
+		<!-- Note subject can be one or more of these topics:
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
-  </AddInInfo>
-  <modules>
-    <insertModule id="GloVisIntegration_Module" className="Module1" autoLoad="false" caption="Module1">
-      <!-- uncomment to have the control hosted on a separate tab-->
-      <tabs>
-        <!--<tab id="GloVisIntegration_Tab1" caption="New Tab">
-          <group refID="GloVisIntegration_Group1"/>
-        </tab>-->
-      </tabs>
-      <groups>
-        <!-- comment this out if you have no controls on the Addin tab to avoid
-              an empty group-->
-        <group id="GloVisIntegration_Group1" caption="Group 1" appearsOnAddInTab="true">
-          <!-- host controls within groups -->
-          <button refID="GloVisIntegration_GloVisPane_OpenButton" size="large" />
-        </group>
-      </groups>
-      <controls>
-        <!-- add your controls here -->
-        <button id="GloVisIntegration_GloVisPane_OpenButton" caption="Open EarthExplorer Pane" className="GloVisPane_OpenButton" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
-          <tooltip heading="Open Pane">Open Pane<disabledText /></tooltip>
-        </button>
-      </controls>
-      <panes>
-        <pane id="GloVisIntegration_GloVisPane" caption="EarthExplorer Pane" className="GloVisPaneViewModel" smallImage="GenericButtonGreen16" defaultTab="esri_mapping_homeTab" defaultTool="esri_mapping_navigateTool">
-          <content className="GloVisPaneView" />
-        </pane>
-      </panes>
-    </insertModule>
-  </modules>
+	</AddInInfo>
+	<modules>
+		<insertModule id="GloVisIntegration_Module" className="Module1" autoLoad="false" caption="Module1">
+
+			<!-- TABS -->
+			<tabs>
+
+				<tab id="GloVisIntegration_Tab1" caption="Website Integrations" keytip="W">
+					<group refID="WebsiteIntegrationsAddin"/>
+				</tab>
+
+			</tabs>
+
+			
+			<!-- GROUPS -->
+			<groups>
+
+				<group id="WebsiteIntegrationsAddin" caption="Integrations">
+					<button refID="EarthExplorerPane_OpenButton"/>
+				</group>
+
+			</groups>
+
+
+			<!-- CONTROLS -->
+			<controls>
+
+				<button id="EarthExplorerPane_OpenButton" caption="Open EarthExplorer Pane" className="EarthExplorerPane_OpenButton"
+						loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
+					<tooltip heading="Open Pane">
+						Open Pane<disabledText />
+					</tooltip>
+				</button>
+				
+			</controls>
+
+			
+			<!-- PANES -->
+			<panes>
+				<pane id="EarthExplorerPane" caption="EarthExplorer Pane" className="EarthExplorerPaneViewModel" smallImage="GenericButtonGreen16" defaultTab="esri_mapping_homeTab" defaultTool="esri_mapping_navigateTool">
+					<content className="EarthExplorerPaneView" />
+				</pane>
+			</panes>
+			
+		</insertModule>
+	</modules>
 </ArcGIS>

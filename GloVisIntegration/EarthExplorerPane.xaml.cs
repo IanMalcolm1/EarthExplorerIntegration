@@ -7,9 +7,9 @@ namespace GloVisIntegration
     /// <summary>
     /// Interaction logic for GloVisPaneView.xaml
     /// </summary>
-    public partial class GloVisPaneView : UserControl
+    public partial class EarthExplorerPaneView : UserControl
     {
-        public GloVisPaneView()
+        public EarthExplorerPaneView()
         {
             InitializeComponent();
 
@@ -20,7 +20,7 @@ namespace GloVisIntegration
         {
             await webView.EnsureCoreWebView2Async();
 
-            var viewModel = (GloVisPaneViewModel)this.DataContext;
+            var viewModel = (EarthExplorerPaneViewModel)this.DataContext;
             viewModel.SetWebViewCore(webView.CoreWebView2);
         }
     }
