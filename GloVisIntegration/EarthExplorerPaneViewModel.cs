@@ -232,27 +232,11 @@ namespace GloVisIntegration
         }
 
 
-        private Task DownloadProductBundle(string downloadUri, string downloadPath)
-        {
-            return Task.Run(async () =>
-            {
-                var response = await _httpClient.GetAsync(downloadUri, HttpCompletionOption.ResponseHeadersRead);
-
-                var contentLength = response.Content.Headers.ContentLength;
-                var downloadSize = response.Content.Headers.ContentLength;
-                var fileName = response.Content.Headers.ContentDisposition.FileName.Replace("\"", "");
-                var downloadType = response.Content.Headers.ContentType.MediaType;
-
-                using (Stream downloadStream = await response.Content.ReadAsStreamAsync())
-                {
-                    using (var fileStream = new FileStream(downloadPath, FileMode.Create))
-                    {
-                        await downloadStream.CopyToAsync(fileStream);
-                    }
-                }
-            });
-        }
-
+        /// <summary>
+        /// Opens Composite Band Tool and populates the bands parameter with bands found in a folder containing
+        /// Landsat bands with default names.
+        /// </summary>
+        /// <param name="bandsFolder"></param>
         private void PopulateAndOpenCompositeBandTool(string bandsFolder)
         {
             Regex bandNamePattern = new Regex(@".*B(\d+)\.(TIF|tif)$");
