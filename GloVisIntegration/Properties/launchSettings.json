@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GloVisIntegration": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\ian13774\\AppData\\Local\\Programs\\ArcGIS\\Pro\\bin\\ArcGISPro.exe"
+    }
+  }
+}
